@@ -1,0 +1,54 @@
+name: sketchnote
+description: "Professional stylus-first sketching & note-taking app for tablets (Apple Pencil, S Pen, and finger input)."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # State management
+  flutter_riverpod: ^2.5.1
+
+  # Local persistence (notebook metadata, settings)
+  drift: ^2.18.0
+  sqlite3_flutter_libs: ^0.5.24
+  path_provider: ^2.1.4
+  path: ^1.9.0
+
+  # File / asset handling
+  uuid: ^4.4.2
+  archive: ^3.6.1            # for .skn (zipped page+stroke) export bundles
+
+  # Rendering helpers
+  vector_math: ^2.1.4
+
+  # PDF export
+  pdf: ^3.11.1
+
+  # Stylus / pointer low-level data is read via raw PointerEvent API (Flutter SDK),
+  # no extra package required for pressure/tilt on iOS+Android.
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.13
+  drift_dev: ^2.18.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/brush_textures/
+    - assets/paper_textures/
+    - assets/icons/
+
+  # fonts:
+  #   - family: AppIcons
+  #     fonts:
+  #       - asset: assets/fonts/AppIcons.ttf
