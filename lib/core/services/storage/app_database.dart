@@ -1,29 +1,63 @@
-// Cursor TODO:
-// This file should define the Drift database schema for notebook & page
-// METADATA (titles, cover paths, page order, created/modified timestamps,
-// brush presets, settings). Actual stroke geometry (potentially large) is
-// likely better stored as compact binary blobs per-page (either as a Drift
-// BLOB column or as separate files referenced by path) rather than as
-// normalized SQL rows-per-point — that would be far too slow to write/read.
-//
-// Suggested tables:
-//   Notebooks(id, title, coverAssetPath, createdAt, modifiedAt, sortIndex)
-//   Pages(id, notebookId, pageIndex, backgroundType, strokeDataBlob /
-//         strokeDataFilePath, thumbnailPath)
-//   BrushPresets(id, name, settingsJson, isUserCreated)
-//
-// Steps:
-// 1. `dart pub add drift sqlite3_flutter_libs path_provider path` (already
-//    in pubspec.yaml — just run `flutter pub get`).
-// 2. Define `@DriftDatabase(tables: [...])` with table classes using Drift's
-//    `Table` + `Column` API.
-// 3. Run build_runner (`dart run build_runner build`) to generate the
-//    `.g.dart` part file.
-// 4. Implement a `StorageService` (separate file) wrapping this database
-//    with the higher-level methods the viewmodels actually call
-//    (getAllNotebooks, saveStrokeBatch, etc.) — don't let viewmodels talk
-//    to Drift directly.
-//
-// Leaving this as a stub/comment file rather than guessing at generated
-// code, since Drift's codegen output depends on the exact package version
-// resolved at `pub get` time.
+import 'dart:io';
+
+import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
+
+part 'app_database.g.dart';
+
+@DataClassName('NotebookEntity')
+class Notebooks extends Table {
+  TextColumn get id => text()();
+  TextColumn get title => text()();
+  TextColumn get coverAssetPath => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get modifiedAt => dateTime()();
+  IntColumn get sortIndex => integer()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('PageEntity')
+class Pages extends Table {
+  TextColumn get id => text()();
+  TextColumn get notebookId => text().references(Notebooks, #id)();
+  IntColumn get pageIndex => integer()();
+  TextColumn get backgroundType => text().nullable()();
+  TextColumn get thumbnailPath => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('StrokeEntity')
+class Strokes extends Table {
+  TextColumn get id => text()();
+  TextColumn get pageId => text().references(Pages, #id)();
+  TextColumn get brushSettingsJson => text()();
+  IntColumn get colorValue => integer()();
+  TextColumn get boundingBoxJson => text()();
+  BlobColumn get geometryBlob => blob()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DriftDatabase(tables: [Notebooks, Pages, Strokes])
+class AppDatabase extends _$AppDatabase {
+  AppDatabase() : super(_openConnection());
+
+  @override
+  int get schemaVersion => 1;
+}
+
+LazyDatabase _openConnection() {
+  return LazyDatabase(() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    final file = File(p.join(dbFolder.path, 'sketchnote_db.sqlite'));
+    return NativeDatabase.createInBackground(file);
+  });
+}
+

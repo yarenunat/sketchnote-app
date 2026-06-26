@@ -1,0 +1,7 @@
+{
+  "elements": {},
+  "imports": [
+    "package:sketchnote/features/canvas/engine/brushes/brush_settings.dart",
+    "package:sketchnote/features/canvas/engine/input/input_point.dart"
+  ]
+}

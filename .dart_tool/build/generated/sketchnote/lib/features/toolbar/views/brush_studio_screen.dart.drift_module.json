@@ -1,0 +1,7 @@
+{
+  "elements": {},
+  "imports": [
+    "package:flutter/material.dart",
+    "package:sketchnote/features/canvas/engine/brushes/brush_settings.dart"
+  ]
+}

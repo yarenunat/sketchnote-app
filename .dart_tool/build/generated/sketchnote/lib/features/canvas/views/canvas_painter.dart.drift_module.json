@@ -1,0 +1,7 @@
+{
+  "elements": {},
+  "imports": [
+    "package:flutter/material.dart",
+    "package:sketchnote/features/canvas/engine/stroke/stroke_builder.dart"
+  ]
+}

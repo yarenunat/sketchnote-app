@@ -1,0 +1,556 @@
+{
+  "elements": {
+    "AppDatabase": {
+      "id": {
+        "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+        "name": "AppDatabase"
+      },
+      "declaration": {
+        "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+        "offset": 1392,
+        "name": "AppDatabase"
+      },
+      "references": [
+        {
+          "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+          "name": "notebooks"
+        },
+        {
+          "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+          "name": "pages"
+        },
+        {
+          "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+          "name": "strokes"
+        }
+      ],
+      "type": "database",
+      "tables": [
+        {
+          "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+          "name": "notebooks"
+        },
+        {
+          "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+          "name": "pages"
+        },
+        {
+          "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+          "name": "strokes"
+        }
+      ],
+      "views": [],
+      "includes": [],
+      "queries": [],
+      "schema_version": 1,
+      "daos": [],
+      "has_constructor_arg": false
+    },
+    "notebooks": {
+      "id": {
+        "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+        "name": "notebooks"
+      },
+      "declaration": {
+        "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+        "offset": 248,
+        "name": "Notebooks"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 291,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "title",
+          "nameInDart": "title",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 324,
+            "name": "title"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "cover_asset_path",
+          "nameInDart": "coverAssetPath",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 360,
+            "name": "coverAssetPath"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "created_at",
+          "nameInDart": "createdAt",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 409,
+            "name": "createdAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "modified_at",
+          "nameInDart": "modifiedAt",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 457,
+            "name": "modifiedAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "sort_index",
+          "nameInDart": "sortIndex",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 501,
+            "name": "sortIndex"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "Notebooks",
+      "row_class_name": "NotebookEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "pages": {
+      "id": {
+        "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+        "name": "pages"
+      },
+      "declaration": {
+        "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+        "offset": 616,
+        "name": "Pages"
+      },
+      "references": [
+        {
+          "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+          "name": "notebooks"
+        }
+      ],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 655,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "notebook_id",
+          "nameInDart": "notebookId",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 688,
+            "name": "notebookId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [
+            {
+              "type": "foreign_key",
+              "column": {
+                "table": {
+                  "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+                  "name": "notebooks"
+                },
+                "name": "id"
+              },
+              "onUpdate": null,
+              "onDelete": null,
+              "initiallyDeferred": false
+            }
+          ],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "page_index",
+          "nameInDart": "pageIndex",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 755,
+            "name": "pageIndex"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "background_type",
+          "nameInDart": "backgroundType",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 798,
+            "name": "backgroundType"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "thumbnail_path",
+          "nameInDart": "thumbnailPath",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 854,
+            "name": "thumbnailPath"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "Pages",
+      "row_class_name": "PageEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "strokes": {
+      "id": {
+        "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+        "name": "strokes"
+      },
+      "declaration": {
+        "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+        "offset": 983,
+        "name": "Strokes"
+      },
+      "references": [
+        {
+          "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+          "name": "pages"
+        }
+      ],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 1024,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "page_id",
+          "nameInDart": "pageId",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 1057,
+            "name": "pageId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [
+            {
+              "type": "foreign_key",
+              "column": {
+                "table": {
+                  "library_uri": "package:sketchnote/core/services/storage/app_database.dart",
+                  "name": "pages"
+                },
+                "name": "id"
+              },
+              "onUpdate": null,
+              "onDelete": null,
+              "initiallyDeferred": false
+            }
+          ],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "brush_settings_json",
+          "nameInDart": "brushSettingsJson",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 1117,
+            "name": "brushSettingsJson"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "color_value",
+          "nameInDart": "colorValue",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 1164,
+            "name": "colorValue"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "bounding_box_json",
+          "nameInDart": "boundingBoxJson",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 1208,
+            "name": "boundingBoxJson"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "blob"
+          },
+          "nullable": false,
+          "nameInSql": "geometry_blob",
+          "nameInDart": "geometryBlob",
+          "declaration": {
+            "source_uri": "package:sketchnote/core/services/storage/app_database.dart",
+            "offset": 1254,
+            "name": "geometryBlob"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "Strokes",
+      "row_class_name": "StrokeEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    }
+  },
+  "imports": [
+    "package:drift/drift.dart",
+    "package:drift/native.dart",
+    "package:path_provider/path_provider.dart",
+    "package:path/path.dart"
+  ]
+}

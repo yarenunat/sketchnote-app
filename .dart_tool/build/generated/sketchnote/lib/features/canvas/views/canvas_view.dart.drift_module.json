@@ -1,0 +1,12 @@
+{
+  "elements": {},
+  "imports": [
+    "package:flutter/material.dart",
+    "package:flutter_riverpod/flutter_riverpod.dart",
+    "package:sketchnote/features/canvas/engine/input/input_point.dart",
+    "package:sketchnote/features/canvas/engine/input/stylus_input_handler.dart",
+    "package:sketchnote/features/canvas/engine/stroke/stroke_builder.dart",
+    "package:sketchnote/features/canvas/viewmodels/canvas_viewmodel.dart",
+    "package:sketchnote/features/canvas/views/canvas_painter.dart"
+  ]
+}

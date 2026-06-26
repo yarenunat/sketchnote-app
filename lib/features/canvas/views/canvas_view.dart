@@ -37,7 +37,10 @@ class _CanvasViewState extends ConsumerState<CanvasView> {
   }
 
   void _onStrokeStart(InputPoint point) {
-    final state = ref.read(canvasViewModelProvider);
+    final stateAsync = ref.read(canvasViewModelProvider(widget.pageId));
+    if (!stateAsync.hasValue) return;
+    final state = stateAsync.value!;
+    
     _activeStroke = StrokeBuilder(
       brush: state.activeBrush,
       color: state.activeColor,
@@ -55,9 +58,8 @@ class _CanvasViewState extends ConsumerState<CanvasView> {
     if (_activeStroke != null) {
       _activeStroke!.addPoint(point);
       final strokeResult = _activeStroke!.finish();
-      ref.read(canvasViewModelProvider.notifier).addStroke(strokeResult);
+      ref.read(canvasViewModelProvider(widget.pageId).notifier).addStroke(strokeResult);
       _activeStroke = null;
-      // Rebuild handled by riverpod state update watching below
     }
   }
 
@@ -86,31 +88,38 @@ class _CanvasViewState extends ConsumerState<CanvasView> {
 
   @override
   Widget build(BuildContext context) {
-    final canvasState = ref.watch(canvasViewModelProvider);
-    _bakeBackgroundIfNeeded(canvasState.committedStrokes);
+    final canvasStateAsync = ref.watch(canvasViewModelProvider(widget.pageId));
 
-    return InteractiveViewer(
-      panEnabled: true,
-      scaleEnabled: true,
-      child: Listener(
-        onPointerDown: _inputHandler.handlePointerDown,
-        onPointerMove: _inputHandler.handlePointerMove,
-        onPointerUp: _inputHandler.handlePointerUp,
-        onPointerCancel: _inputHandler.handlePointerCancel,
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          color: Colors.white,
-          width: double.infinity,
-          height: double.infinity,
-          child: CustomPaint(
-            painter: CanvasPainter(
-              backgroundPicture: _cachedBackground,
-              activeStroke: _activeStroke,
+    return canvasStateAsync.when(
+      data: (canvasState) {
+        _bakeBackgroundIfNeeded(canvasState.committedStrokes);
+
+        return InteractiveViewer(
+          panEnabled: true,
+          scaleEnabled: true,
+          child: Listener(
+            onPointerDown: _inputHandler.handlePointerDown,
+            onPointerMove: _inputHandler.handlePointerMove,
+            onPointerUp: _inputHandler.handlePointerUp,
+            onPointerCancel: _inputHandler.handlePointerCancel,
+            behavior: HitTestBehavior.opaque,
+            child: Container(
+              color: Colors.white,
+              width: double.infinity,
+              height: double.infinity,
+              child: CustomPaint(
+                painter: CanvasPainter(
+                  backgroundPicture: _cachedBackground,
+                  activeStroke: _activeStroke,
+                ),
+                size: Size.infinite,
+              ),
             ),
-            size: Size.infinite,
           ),
-        ),
-      ),
+        );
+      },
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, st) => Scaffold(body: Center(child: Text('Error loading page: $e'))),
     );
   }
 }

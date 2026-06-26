@@ -1,0 +1,7 @@
+{
+  "elements": {},
+  "imports": [
+    "package:flutter/gestures.dart",
+    "package:sketchnote/features/canvas/engine/input/input_point.dart"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "elements": {},
+  "imports": [
+    "package:flutter/material.dart",
+    "package:flutter_riverpod/flutter_riverpod.dart",
+    "package:sketchnote/core/theme/app_theme.dart",
+    "package:sketchnote/features/canvas/views/canvas_view.dart"
+  ]
+}

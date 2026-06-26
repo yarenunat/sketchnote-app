@@ -1,0 +1,6 @@
+{
+  "elements": {},
+  "imports": [
+    "package:sketchnote/features/notebook/models/notebook_models.dart"
+  ]
+}
