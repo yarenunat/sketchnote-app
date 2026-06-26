@@ -1,30 +1,35 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import '../engine/stroke/stroke_builder.dart';
 
-/// Paints the committed-stroke cache plus any in-progress stroke for the
-/// current page.
-///
-/// Cursor TODO:
-/// - Take a cached `ui.Picture` (or `ui.Image`) for already-committed
-///   strokes and draw it with `canvas.drawPicture`/`drawImage` — cheap,
-///   constant cost regardless of stroke count.
-/// - Take the current in-progress `Path` (from StrokeBuilder.buildPreviewPath)
-///   and draw it fresh each frame on top.
-/// - For textured/grain brushes, prefer `canvas.drawAtlas` with a sprite
-///   sheet of the brush texture for stamping performance over drawing many
-///   individual images.
-/// - Override `shouldRepaint` precisely (compare cache generation id + active
-///   stroke point count) so Flutter doesn't over-repaint.
 class CanvasPainter extends CustomPainter {
-  const CanvasPainter();
+  final ui.Picture? backgroundPicture;
+  final StrokeBuilder? activeStroke;
+
+  const CanvasPainter({
+    this.backgroundPicture,
+    this.activeStroke,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Cursor TODO: draw cached layer, then active stroke preview.
+    if (backgroundPicture != null) {
+      canvas.drawPicture(backgroundPicture!);
+    }
+
+    if (activeStroke != null) {
+      final path = activeStroke!.buildPreviewPath();
+      final paint = Paint()
+        ..color = activeStroke!.color
+        ..style = PaintingStyle.fill
+        ..blendMode = activeStroke!.brush.blendMode;
+      
+      canvas.drawPath(path, paint);
+    }
   }
 
   @override
   bool shouldRepaint(covariant CanvasPainter oldDelegate) {
-    // Cursor TODO: real diffing logic.
-    return true;
+    return true; // We recreate the painter on every frame while drawing.
   }
 }

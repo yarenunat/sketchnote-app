@@ -75,7 +75,87 @@ class BrushSettings {
     this.blendMode = BlendMode.srcOver,
   });
 
-  // Cursor TODO: implement copyWith, toJson, fromJson.
+  BrushSettings copyWith({
+    String? id,
+    String? name,
+    String? shapeTexturePath,
+    String? grainTexturePath,
+    double? baseSize,
+    double? pressureToSizeCurve,
+    double? pressureToOpacityCurve,
+    double? baseOpacity,
+    double? spacing,
+    double? scatter,
+    double? rotationJitter,
+    bool? followsStrokeDirection,
+    double? taperStart,
+    double? taperEnd,
+    double? stabilization,
+    BlendMode? blendMode,
+  }) {
+    return BrushSettings(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      shapeTexturePath: shapeTexturePath ?? this.shapeTexturePath,
+      grainTexturePath: grainTexturePath ?? this.grainTexturePath,
+      baseSize: baseSize ?? this.baseSize,
+      pressureToSizeCurve: pressureToSizeCurve ?? this.pressureToSizeCurve,
+      pressureToOpacityCurve: pressureToOpacityCurve ?? this.pressureToOpacityCurve,
+      baseOpacity: baseOpacity ?? this.baseOpacity,
+      spacing: spacing ?? this.spacing,
+      scatter: scatter ?? this.scatter,
+      rotationJitter: rotationJitter ?? this.rotationJitter,
+      followsStrokeDirection: followsStrokeDirection ?? this.followsStrokeDirection,
+      taperStart: taperStart ?? this.taperStart,
+      taperEnd: taperEnd ?? this.taperEnd,
+      stabilization: stabilization ?? this.stabilization,
+      blendMode: blendMode ?? this.blendMode,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'shapeTexturePath': shapeTexturePath,
+      'grainTexturePath': grainTexturePath,
+      'baseSize': baseSize,
+      'pressureToSizeCurve': pressureToSizeCurve,
+      'pressureToOpacityCurve': pressureToOpacityCurve,
+      'baseOpacity': baseOpacity,
+      'spacing': spacing,
+      'scatter': scatter,
+      'rotationJitter': rotationJitter,
+      'followsStrokeDirection': followsStrokeDirection,
+      'taperStart': taperStart,
+      'taperEnd': taperEnd,
+      'stabilization': stabilization,
+      'blendMode': blendMode.index,
+    };
+  }
+
+  factory BrushSettings.fromJson(Map<String, dynamic> json) {
+    return BrushSettings(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      shapeTexturePath: json['shapeTexturePath'] as String?,
+      grainTexturePath: json['grainTexturePath'] as String?,
+      baseSize: (json['baseSize'] as num?)?.toDouble() ?? 6.0,
+      pressureToSizeCurve: (json['pressureToSizeCurve'] as num?)?.toDouble() ?? 0.6,
+      pressureToOpacityCurve: (json['pressureToOpacityCurve'] as num?)?.toDouble() ?? 0.3,
+      baseOpacity: (json['baseOpacity'] as num?)?.toDouble() ?? 1.0,
+      spacing: (json['spacing'] as num?)?.toDouble() ?? 0.1,
+      scatter: (json['scatter'] as num?)?.toDouble() ?? 0.0,
+      rotationJitter: (json['rotationJitter'] as num?)?.toDouble() ?? 0.0,
+      followsStrokeDirection: json['followsStrokeDirection'] as bool? ?? false,
+      taperStart: (json['taperStart'] as num?)?.toDouble() ?? 0.0,
+      taperEnd: (json['taperEnd'] as num?)?.toDouble() ?? 0.0,
+      stabilization: (json['stabilization'] as num?)?.toDouble() ?? 0.0,
+      blendMode: json['blendMode'] != null 
+          ? BlendMode.values[json['blendMode'] as int] 
+          : BlendMode.srcOver,
+    );
+  }
 }
 
 /// A small built-in starter set, mirroring common categories from the

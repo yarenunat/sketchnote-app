@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import '../engine/brushes/brush_settings.dart';
+import '../../canvas/engine/brushes/brush_settings.dart';
 
 /// A single finalized stroke on a page, as stored in the page model
 /// (distinct from the engine's transient `StrokeResult` used only while

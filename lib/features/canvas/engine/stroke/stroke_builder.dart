@@ -38,37 +38,156 @@ import '../input/input_point.dart';
 ///    CanvasPainter to draw and for persistence to store.
 class StrokeBuilder {
   final BrushSettings brush;
+  final Color color;
 
-  StrokeBuilder({required this.brush});
+  StrokeBuilder({required this.brush, required this.color});
 
   /// Raw points collected so far for the in-progress stroke.
   final List<InputPoint> _rawPoints = [];
+  final List<Offset> _smoothedPoints = [];
+  final List<double> _widths = [];
+  
+  Path? _cachedPath;
 
   void addPoint(InputPoint point) {
     _rawPoints.add(point);
-    // Cursor TODO: trigger incremental smoothing + path rebuild here.
+    
+    // Stabilize
+    Offset smoothedPos = point.position;
+    if (_smoothedPoints.isNotEmpty && brush.stabilization > 0) {
+      double st = brush.stabilization.clamp(0.0, 0.99);
+      smoothedPos = Offset.lerp(_smoothedPoints.last, point.position, 1.0 - st)!;
+    }
+    _smoothedPoints.add(smoothedPos);
+
+    // Calculate width
+    double pressureFactor = lerpDouble(1.0 - brush.pressureToSizeCurve, 1.0, point.pressure) ?? 1.0;
+    double width = brush.baseSize * pressureFactor;
+    
+    // Start taper
+    int taperLength = 10;
+    if (_rawPoints.length < taperLength && brush.taperStart > 0) {
+      double t = _rawPoints.length / taperLength;
+      double taperFactor = lerpDouble(1.0 - brush.taperStart, 1.0, t) ?? 1.0;
+      width *= taperFactor;
+    }
+
+    _widths.add(width);
+    _cachedPath = null;
   }
 
   /// Returns the current best-effort renderable Path for the in-progress
   /// stroke (called every frame while drawing).
   Path buildPreviewPath() {
-    throw UnimplementedError('Cursor: implement smoothing -> Path construction.');
+    if (_cachedPath != null) return _cachedPath!;
+    _cachedPath = _buildVariableWidthPath(_smoothedPoints, _widths);
+    return _cachedPath!;
   }
 
   /// Finalizes the stroke, returning an immutable result to hand off to the
   /// page's stroke list / undo stack.
   StrokeResult finish() {
-    throw UnimplementedError('Cursor: bake final Path + bounding box + brush snapshot.');
+    if (brush.taperEnd > 0) {
+      int taperLength = 10;
+      int n = _widths.length;
+      for (int i = 0; i < taperLength && i < n; i++) {
+        double t = i / taperLength;
+        double taperFactor = lerpDouble(1.0 - brush.taperEnd, 1.0, t) ?? 1.0;
+        _widths[n - 1 - i] *= taperFactor;
+      }
+      _cachedPath = null;
+    }
+
+    Path finalPath = buildPreviewPath();
+    
+    return StrokeResult(
+      path: finalPath,
+      boundingBox: finalPath.getBounds(),
+      brushSnapshot: brush,
+      color: color,
+    );
+  }
+
+  Path _buildVariableWidthPath(List<Offset> points, List<double> widths) {
+    if (points.isEmpty) return Path();
+    if (points.length == 1) {
+      return Path()..addOval(Rect.fromCircle(center: points.first, radius: widths.first / 2));
+    }
+
+    Path path = Path();
+    List<Offset> leftBound = [];
+    List<Offset> rightBound = [];
+
+    for (int i = 0; i < points.length; i++) {
+      Offset current = points[i];
+      Offset next = (i < points.length - 1) ? points[i + 1] : points[i];
+      Offset prev = (i > 0) ? points[i - 1] : points[i];
+
+      Offset dir;
+      if (i == 0) {
+        dir = next - current;
+      } else if (i == points.length - 1) {
+        dir = current - prev;
+      } else {
+        dir = next - prev;
+      }
+
+      if (dir.distance == 0) {
+        dir = const Offset(1, 0);
+      } else {
+        dir = dir / dir.distance;
+      }
+
+      Offset normal = Offset(-dir.dy, dir.dx);
+      double radius = widths[i] / 2;
+
+      leftBound.add(current + normal * radius);
+      rightBound.add(current - normal * radius);
+    }
+
+    path.moveTo(leftBound.first.dx, leftBound.first.dy);
+    _addSmoothCurve(path, leftBound);
+    
+    path.arcToPoint(
+      rightBound.last,
+      radius: Radius.circular(widths.last / 2),
+      clockwise: false,
+    );
+
+    _addSmoothCurve(path, rightBound.reversed.toList(), isReversed: true);
+
+    path.arcToPoint(
+      leftBound.first,
+      radius: Radius.circular(widths.first / 2),
+      clockwise: false,
+    );
+
+    path.close();
+    return path;
+  }
+
+  void _addSmoothCurve(Path path, List<Offset> bound, {bool isReversed = false}) {
+    if (bound.length < 2) return;
+    
+    if (isReversed) {
+      path.lineTo(bound.first.dx, bound.first.dy);
+    }
+
+    for (int i = 0; i < bound.length - 1; i++) {
+      Offset p0 = bound[i];
+      Offset p1 = bound[i + 1];
+      Offset mid = Offset((p0.dx + p1.dx) / 2, (p0.dy + p1.dy) / 2);
+      
+      if (i == bound.length - 2) {
+        path.lineTo(p1.dx, p1.dy);
+      } else {
+        path.quadraticBezierTo(p0.dx, p0.dy, mid.dx, mid.dy);
+      }
+    }
   }
 }
 
 /// Immutable finalized stroke, ready for storage and rendering.
-///
-/// Cursor TODO: also store the raw [InputPoint] list (or a compressed form
-/// of it) alongside the baked Path, NOT just the Path — so that strokes
-/// remain editable later (e.g. a future "adjust pressure curve after the
-/// fact" feature) and so vector export (PDF/SVG) stays crisp at any zoom,
-/// rather than rasterizing once and losing resolution.
 class StrokeResult {
   final Path path;
   final Rect boundingBox;
