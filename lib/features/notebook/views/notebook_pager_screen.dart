@@ -1,28 +1,101 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Open-notebook page navigator, matching the reference screenshot (image 2):
-/// a "fanned pages" view when idle/swiping, settling into a flat
-/// [CanvasView] for the centered page when the user starts drawing.
-///
-/// Cursor TODO:
-/// - Implement the page-turn / fan visual using a `PageView` with a custom
-///   transition builder (scale + slight rotation + drop shadow per offset
-///   page, similar to a cover-flow), OR a simpler swipe-to-flip skeuomorphic
-///   page-curl effect if time allows — start simple (plain PageView,
-///   crossfade) and layer on the fancier visual later.
-/// - Each page in the PageView renders a thumbnail until it becomes the
-///   active page, then swaps to a live interactive [CanvasView].
-/// - Bottom bar: delete page / export / add page (matches reference icons).
-class NotebookPagerScreen extends StatelessWidget {
+import '../viewmodels/notebook_viewmodel.dart';
+import '../../canvas/views/canvas_view.dart';
+
+class NotebookPagerScreen extends ConsumerStatefulWidget {
   final String notebookId;
 
   const NotebookPagerScreen({super.key, required this.notebookId});
 
   @override
+  ConsumerState<NotebookPagerScreen> createState() => _NotebookPagerScreenState();
+}
+
+class _NotebookPagerScreenState extends ConsumerState<NotebookPagerScreen> {
+  late PageController _pageController;
+  int _currentPageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: const Placeholder(),
-      // Cursor TODO: implement PageView + page-turn transition + bottom bar.
+    final notebookAsync = ref.watch(notebookViewModelProvider(widget.notebookId));
+
+    return notebookAsync.when(
+      data: (notebook) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(notebook.title),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.ios_share),
+                tooltip: 'Export',
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Export feature (Milestone 5) coming soon.')),
+                  );
+                },
+              ),
+            ],
+          ),
+          body: PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPageIndex = index;
+              });
+            },
+            itemCount: notebook.pageCount,
+            itemBuilder: (context, index) {
+              final page = notebook.pages[index];
+              return CanvasView(pageId: page.id);
+            },
+          ),
+          bottomNavigationBar: BottomAppBar(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  tooltip: 'Delete Page',
+                  onPressed: () {
+                    final pageId = notebook.pages[_currentPageIndex].id;
+                    ref.read(notebookViewModelProvider(widget.notebookId).notifier).deletePage(pageId);
+                  },
+                ),
+                Text('Page ${_currentPageIndex + 1} of ${notebook.pageCount}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                IconButton(
+                  icon: const Icon(Icons.add_box_outlined),
+                  tooltip: 'Add Page',
+                  onPressed: () async {
+                    await ref.read(notebookViewModelProvider(widget.notebookId).notifier).addPage();
+                    // Go to the new page
+                    _pageController.animateToPage(
+                      notebook.pageCount,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (err, st) => Scaffold(body: Center(child: Text('Error: $err'))),
     );
   }
 }

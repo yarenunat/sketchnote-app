@@ -1,42 +1,35 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../notebook/models/notebook_models.dart';
+import '../../../core/services/storage/storage_service.dart';
 
-/// Manages the list of notebooks shown in [LibraryScreen]: load from
-/// storage, create, duplicate, delete, rename, reorder.
-///
-/// Cursor TODO:
-/// - Back this with the storage service (see core/services/storage) —
-///   likely Drift for metadata + filesystem for actual page/stroke data
-///   (or fully inside Drift as blobs; pick one and be consistent).
-/// - Generate a default set of cover styles matching the variety in the
-///   reference image (solid colors, patterns, illustrated covers) for the
-///   "new notebook" flow.
-class LibraryState {
-  final List<Notebook> notebooks;
-  final bool isLoading;
+class LibraryViewModel extends AsyncNotifier<List<Notebook>> {
+  late StorageService _storage;
 
-  const LibraryState({this.notebooks = const [], this.isLoading = true});
-}
-
-class LibraryViewModel extends Notifier<LibraryState> {
   @override
-  LibraryState build() {
-    throw UnimplementedError('Cursor: load notebooks from storage on startup.');
+  Future<List<Notebook>> build() async {
+    _storage = ref.read(storageServiceProvider);
+    return _storage.getAllNotebooks();
   }
 
-  Future<Notebook> createNotebook({required String title, required String coverAssetPath}) {
-    throw UnimplementedError('Cursor: implement.');
+  Future<void> createNotebook({required String title, required String coverAssetPath}) async {
+    final newNb = await _storage.createNotebook(title: title, coverAssetPath: coverAssetPath);
+    final currentList = state.value ?? [];
+    state = AsyncValue.data([...currentList, newNb]);
   }
 
-  Future<void> deleteNotebook(String id) {
-    throw UnimplementedError('Cursor: implement.');
+  Future<void> deleteNotebook(String id) async {
+    await _storage.deleteNotebook(id);
+    final currentList = state.value ?? [];
+    state = AsyncValue.data(currentList.where((n) => n.id != id).toList());
   }
 
-  Future<Notebook> duplicateNotebook(String id) {
-    throw UnimplementedError('Cursor: implement.');
+  Future<void> duplicateNotebook(String id) async {
+    // Basic duplication
+    final nb = await _storage.getNotebook(id);
+    await createNotebook(title: '${nb.title} (Copy)', coverAssetPath: nb.coverAssetPath);
   }
 }
 
 final libraryViewModelProvider =
-    NotifierProvider<LibraryViewModel, LibraryState>(LibraryViewModel.new);
+    AsyncNotifierProvider<LibraryViewModel, List<Notebook>>(LibraryViewModel.new);

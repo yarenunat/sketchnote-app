@@ -20,8 +20,11 @@ final storageServiceProvider = Provider<StorageService>((ref) {
 
 abstract class StorageService {
   Future<List<Notebook>> getAllNotebooks();
+  Future<Notebook> getNotebook(String id);
   Future<Notebook> createNotebook({required String title, required String coverAssetPath});
   Future<void> deleteNotebook(String id);
+  Future<NotebookPage> addPageToNotebook(String notebookId);
+  Future<void> deletePage(String pageId);
   Future<NotebookPage> getPage(String pageId);
   Future<void> saveStroke({required String pageId, required StrokeData stroke});
   Future<void> deleteStroke({required String pageId, required String strokeId});
@@ -42,20 +45,11 @@ class DriftStorageService implements StorageService {
       
       final pages = <NotebookPage>[];
       for (final p in pageEntities) {
-        final strokeEntities = await (_db.select(_db.strokes)..where((tbl) => tbl.pageId.equals(p.id))).get();
-        
-        final strokes = strokeEntities.map((s) => StrokeData(
-          id: s.id,
-          brush: BrushSettings.fromJson(jsonDecode(s.brushSettingsJson) as Map<String, dynamic>),
-          color: Color(s.colorValue),
-          points: StrokeData.blobToPoints(s.geometryBlob),
-          boundingBox: StrokeData.boundingBoxFromJson(s.boundingBoxJson),
-        )).toList();
-
+        // Do NOT load strokes here to keep Library fast.
         pages.add(NotebookPage(
           id: p.id,
           index: p.pageIndex,
-          strokes: strokes,
+          strokes: const [], 
           thumbnailPath: p.thumbnailPath,
         ));
       }
@@ -68,6 +62,30 @@ class DriftStorageService implements StorageService {
       ));
     }
     return result;
+  }
+
+  @override
+  Future<Notebook> getNotebook(String id) async {
+    final entity = await (_db.select(_db.notebooks)..where((tbl) => tbl.id.equals(id))).getSingle();
+    final pageEntities = await (_db.select(_db.pages)..where((tbl) => tbl.notebookId.equals(entity.id))).get();
+    
+    final pages = <NotebookPage>[];
+    for (final p in pageEntities) {
+      // We load the page without strokes first. Strokes are loaded by CanvasViewModel via getPage.
+      pages.add(NotebookPage(
+        id: p.id,
+        index: p.pageIndex,
+        strokes: const [],
+        thumbnailPath: p.thumbnailPath,
+      ));
+    }
+
+    return Notebook(
+      id: entity.id,
+      title: entity.title,
+      pages: pages,
+      coverAssetPath: entity.coverAssetPath,
+    );
   }
 
   @override
@@ -103,6 +121,29 @@ class DriftStorageService implements StorageService {
   @override
   Future<void> deleteNotebook(String id) async {
     await (_db.delete(_db.notebooks)..where((tbl) => tbl.id.equals(id))).go();
+  }
+
+  @override
+  Future<NotebookPage> addPageToNotebook(String notebookId) async {
+    final pageEntities = await (_db.select(_db.pages)..where((tbl) => tbl.notebookId.equals(notebookId))).get();
+    final nextIndex = pageEntities.length;
+    
+    final pageId = '${notebookId}_page_${DateTime.now().millisecondsSinceEpoch}';
+    await _db.into(_db.pages).insert(PageEntity(
+      id: pageId,
+      notebookId: notebookId,
+      pageIndex: nextIndex,
+      backgroundType: null,
+      thumbnailPath: null,
+    ));
+
+    return NotebookPage(id: pageId, index: nextIndex, strokes: const []);
+  }
+
+  @override
+  Future<void> deletePage(String pageId) async {
+    await (_db.delete(_db.pages)..where((tbl) => tbl.id.equals(pageId))).go();
+    await (_db.delete(_db.strokes)..where((tbl) => tbl.pageId.equals(pageId))).go();
   }
 
   @override

@@ -122,4 +122,18 @@ class Notebook {
   });
 
   int get pageCount => pages.length;
+
+  Notebook copyWith({
+    String? id,
+    String? title,
+    List<NotebookPage>? pages,
+    String? coverAssetPath,
+  }) {
+    return Notebook(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      pages: pages ?? this.pages,
+      coverAssetPath: coverAssetPath ?? this.coverAssetPath,
+    );
+  }
 }

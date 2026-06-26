@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/app_theme.dart';
-import 'features/canvas/views/canvas_view.dart';
+import 'features/library/views/library_screen.dart';
 
 /// Entry point.
 ///
@@ -23,7 +23,7 @@ class SketchNoteApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      home: const CanvasView(pageId: 'test_page_1'),
+      home: const LibraryScreen(),
     );
   }
 }
