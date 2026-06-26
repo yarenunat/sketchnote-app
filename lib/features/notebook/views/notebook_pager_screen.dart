@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../viewmodels/notebook_viewmodel.dart';
 import '../../canvas/views/canvas_view.dart';
+import '../../../core/services/export/export_service.dart';
 
 class NotebookPagerScreen extends ConsumerStatefulWidget {
   final String notebookId;
@@ -43,8 +44,44 @@ class _NotebookPagerScreenState extends ConsumerState<NotebookPagerScreen> {
                 icon: const Icon(Icons.ios_share),
                 tooltip: 'Export',
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Export feature (Milestone 5) coming soon.')),
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (_) => SafeArea(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.picture_as_pdf),
+                            title: const Text('Export Notebook as Vector PDF'),
+                            onTap: () async {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exporting PDF...')));
+                              try {
+                                final path = await ref.read(exportServiceProvider).exportNotebookAsPdf(notebook);
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Saved to $path')));
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Export failed: $e')));
+                              }
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.image),
+                            title: const Text('Export Current Page as High-Res PNG'),
+                            onTap: () async {
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exporting PNG...')));
+                              try {
+                                final page = notebook.pages[_currentPageIndex];
+                                final path = await ref.read(exportServiceProvider).exportPageAsImage(page);
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Saved to $path')));
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Export failed: $e')));
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
               ),

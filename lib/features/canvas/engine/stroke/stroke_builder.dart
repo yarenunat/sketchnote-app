@@ -105,6 +105,7 @@ class StrokeBuilder {
       boundingBox: finalPath.getBounds(),
       brushSnapshot: brush,
       color: color,
+      outlinePolygon: cachedOutline,
     );
   }
 
@@ -163,8 +164,18 @@ class StrokeBuilder {
     );
 
     path.close();
+    
+    // Store the polygon for PDF export
+    _cachedOutline = [
+      ...leftBound,
+      ...rightBound.reversed,
+    ];
+
     return path;
   }
+  
+  List<Offset>? _cachedOutline;
+  List<Offset> get cachedOutline => _cachedOutline ?? [];
 
   void _addSmoothCurve(Path path, List<Offset> bound, {bool isReversed = false}) {
     if (bound.length < 2) return;
@@ -187,17 +198,18 @@ class StrokeBuilder {
   }
 }
 
-/// Immutable finalized stroke, ready for storage and rendering.
 class StrokeResult {
   final Path path;
   final Rect boundingBox;
   final BrushSettings brushSnapshot;
   final Color color;
+  final List<Offset> outlinePolygon;
 
   const StrokeResult({
     required this.path,
     required this.boundingBox,
     required this.brushSnapshot,
     required this.color,
+    this.outlinePolygon = const [],
   });
 }

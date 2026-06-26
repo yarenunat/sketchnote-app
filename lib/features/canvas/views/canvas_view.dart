@@ -7,6 +7,7 @@ import '../engine/input/stylus_input_handler.dart';
 import '../engine/stroke/stroke_builder.dart';
 import '../viewmodels/canvas_viewmodel.dart';
 import 'canvas_painter.dart';
+import '../../toolbar/views/toolbar_view.dart';
 
 class CanvasView extends ConsumerStatefulWidget {
   final String pageId;
@@ -94,28 +95,40 @@ class _CanvasViewState extends ConsumerState<CanvasView> {
       data: (canvasState) {
         _bakeBackgroundIfNeeded(canvasState.committedStrokes);
 
-        return InteractiveViewer(
-          panEnabled: true,
-          scaleEnabled: true,
-          child: Listener(
-            onPointerDown: _inputHandler.handlePointerDown,
-            onPointerMove: _inputHandler.handlePointerMove,
-            onPointerUp: _inputHandler.handlePointerUp,
-            onPointerCancel: _inputHandler.handlePointerCancel,
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              color: Colors.white,
-              width: double.infinity,
-              height: double.infinity,
-              child: CustomPaint(
-                painter: CanvasPainter(
-                  backgroundPicture: _cachedBackground,
-                  activeStroke: _activeStroke,
+        return Stack(
+          children: [
+            InteractiveViewer(
+              panEnabled: true,
+              scaleEnabled: true,
+              child: Listener(
+                onPointerDown: _inputHandler.handlePointerDown,
+                onPointerMove: _inputHandler.handlePointerMove,
+                onPointerUp: _inputHandler.handlePointerUp,
+                onPointerCancel: _inputHandler.handlePointerCancel,
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  color: Colors.white,
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: CustomPaint(
+                    painter: CanvasPainter(
+                      backgroundPicture: _cachedBackground,
+                      activeStroke: _activeStroke,
+                    ),
+                    size: Size.infinite,
+                  ),
                 ),
-                size: Size.infinite,
               ),
             ),
-          ),
+            Positioned(
+              top: 16,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: ToolbarView(pageId: widget.pageId),
+              ),
+            ),
+          ],
         );
       },
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
