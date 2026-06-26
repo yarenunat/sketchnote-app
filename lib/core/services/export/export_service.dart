@@ -1,15 +1,13 @@
-import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:path_provider/path_provider.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../features/notebook/models/notebook_models.dart';
 import '../../../features/canvas/engine/stroke/stroke_builder.dart';
 import '../../../features/canvas/engine/input/input_point.dart';
+import 'export_helper.dart' as helper;
 
 final exportServiceProvider = Provider<ExportService>((ref) {
   return ExportService();
@@ -68,11 +66,7 @@ class ExportService {
     }
 
     final bytes = await pdfDoc.save();
-    final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/notebook_${notebook.id}.pdf');
-    await file.writeAsBytes(bytes);
-    
-    return file.path;
+    return helper.saveFile(bytes, '${notebook.title.replaceAll(' ', '_')}.pdf');
   }
 
   Future<String> exportPageAsImage(NotebookPage page, {double pixelRatio = 3.0}) async {
@@ -97,10 +91,6 @@ class ExportService {
     final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
     final bytes = byteData!.buffer.asUint8List();
 
-    final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/page_${page.id}.png');
-    await file.writeAsBytes(bytes);
-    
-    return file.path;
+    return helper.saveFile(bytes, 'page_${page.id}.png');
   }
 }
