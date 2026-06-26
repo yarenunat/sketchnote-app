@@ -137,8 +137,9 @@ class _PreviewPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final opacity = stroke.brushSnapshot.baseOpacity;
     final paint = Paint()
-      ..color = stroke.color.withOpacity(stroke.brushSnapshot.baseOpacity)
+      ..color = stroke.color.withAlpha((opacity * 255).toInt())
       ..style = PaintingStyle.fill
       ..blendMode = stroke.brushSnapshot.blendMode;
     canvas.drawPath(stroke.path, paint);

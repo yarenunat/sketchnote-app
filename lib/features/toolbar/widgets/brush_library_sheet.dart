@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../canvas/viewmodels/canvas_viewmodel.dart';
 import '../../canvas/engine/brushes/brush_settings.dart';
+import '../views/brush_studio_screen.dart';
 
 class BrushLibrarySheet extends ConsumerWidget {
   final String pageId;
@@ -36,7 +37,27 @@ class BrushLibrarySheet extends ConsumerWidget {
                   leading: Icon(Icons.brush, color: isActive ? Colors.blue : Colors.grey),
                   title: Text(brush.name, style: TextStyle(fontWeight: isActive ? FontWeight.bold : FontWeight.normal)),
                   subtitle: Text('Size: ${brush.baseSize.toStringAsFixed(1)}'),
-                  trailing: isActive ? const Icon(Icons.check, color: Colors.blue) : null,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.grey),
+                        onPressed: () async {
+                          final modifiedBrush = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BrushStudioScreen(initialBrush: brush),
+                            ),
+                          );
+                          if (modifiedBrush != null && modifiedBrush is BrushSettings) {
+                            ref.read(canvasViewModelProvider(pageId).notifier).selectBrush(modifiedBrush);
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
+                      if (isActive) const Icon(Icons.check, color: Colors.blue),
+                    ],
+                  ),
                   onTap: () {
                     ref.read(canvasViewModelProvider(pageId).notifier).selectBrush(brush);
                     Navigator.pop(context);

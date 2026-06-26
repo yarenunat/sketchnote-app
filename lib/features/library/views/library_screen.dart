@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../viewmodels/library_viewmodel.dart';
 import '../../notebook/views/notebook_pager_screen.dart';
+import '../../settings/views/settings_screen.dart';
 
 class LibraryScreen extends ConsumerWidget {
   const LibraryScreen({super.key});
@@ -12,7 +13,21 @@ class LibraryScreen extends ConsumerWidget {
     final libraryAsync = ref.watch(libraryViewModelProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('SketchNote')),
+      appBar: AppBar(
+        title: const Text('SketchNote'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Settings',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: libraryAsync.when(
         data: (notebooks) {
           if (notebooks.isEmpty) {
