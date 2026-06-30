@@ -1,13 +1,9 @@
+// ignore: deprecated_member_use
 import 'package:drift/drift.dart';
-import 'package:drift/wasm.dart';
+// ignore: deprecated_member_use
+import 'package:drift/web.dart';
 
 QueryExecutor openConnection() {
-  return DatabaseConnection.delayed(Future(() async {
-    final result = await WasmDatabase.open(
-      databaseName: 'sketchnote_db',
-      sqlite3Uri: Uri.parse('sqlite3.wasm'),
-      driftWorkerUri: Uri.parse('drift_worker.js'),
-    );
-    return result.resolvedExecutor;
-  }).then((value) => DatabaseConnection(value)));
+  // ignore: deprecated_member_use
+  return WebDatabase('sketchnote_db');
 }

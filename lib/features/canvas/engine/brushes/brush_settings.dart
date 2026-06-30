@@ -161,9 +161,6 @@ class BrushSettings {
 /// A small built-in starter set, mirroring common categories from the
 /// reference Brush Library screenshot (Sketching, Inking, Drawing, Painting,
 /// Calligraphy, Airbrushing, Charcoals, ...).
-///
-/// Cursor TODO: replace these placeholder presets with real tuned values,
-/// and load actual texture assets once designed.
 class BrushPresets {
   BrushPresets._();
 
@@ -173,16 +170,48 @@ class BrushPresets {
     baseSize: 3,
     pressureToSizeCurve: 0.1,
     pressureToOpacityCurve: 0.0,
+    baseOpacity: 1.0,
     stabilization: 0.4,
+    taperStart: 0.2,
+    taperEnd: 0.2,
+    blendMode: BlendMode.srcOver,
   );
 
   static const BrushSettings pencil = BrushSettings(
     id: 'pencil_hb',
     name: 'Pencil HB',
-    baseSize: 4,
-    pressureToSizeCurve: 0.5,
+    baseSize: 5,
+    pressureToSizeCurve: 0.6,
     pressureToOpacityCurve: 0.5,
+    baseOpacity: 0.7,
+    stabilization: 0.2,
+    taperStart: 0.1,
+    taperEnd: 0.1,
+    blendMode: BlendMode.srcOver,
     grainTexturePath: 'assets/brush_textures/pencil_grain.png',
+  );
+
+  static const BrushSettings marker = BrushSettings(
+    id: 'marker',
+    name: 'Marker',
+    baseSize: 22,
+    pressureToSizeCurve: 0.05,  // Markers barely change width with pressure
+    pressureToOpacityCurve: 0.0,
+    baseOpacity: 0.45,
+    stabilization: 0.1,
+    blendMode: BlendMode.multiply,
+  );
+
+  static const BrushSettings watercolor = BrushSettings(
+    id: 'watercolor',
+    name: 'Watercolor',
+    baseSize: 30,
+    pressureToSizeCurve: 0.4,
+    pressureToOpacityCurve: 0.6,
+    baseOpacity: 0.12,
+    scatter: 3.0,
+    stabilization: 0.3,
+    blendMode: BlendMode.srcOver,
   );
 
   static const BrushSettings softCharcoal = BrushSettings(
@@ -191,20 +220,26 @@ class BrushPresets {
     baseSize: 14,
     pressureToSizeCurve: 0.7,
     pressureToOpacityCurve: 0.6,
+    baseOpacity: 0.8,
     scatter: 2.0,
+    blendMode: BlendMode.srcOver,
     grainTexturePath: 'assets/brush_textures/charcoal_grain.png',
   );
 
   static const BrushSettings eraser = BrushSettings(
     id: 'eraser_soft',
     name: 'Soft Eraser',
-    baseSize: 18,
+    baseSize: 20,
+    pressureToSizeCurve: 0.3,
+    baseOpacity: 1.0,
     blendMode: BlendMode.clear,
   );
 
   static const List<BrushSettings> defaults = [
     technicalPen,
     pencil,
+    marker,
+    watercolor,
     softCharcoal,
   ];
 }

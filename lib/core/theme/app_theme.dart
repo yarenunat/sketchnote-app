@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
-  // Premium color palette
-  static const Color _seed = Color(0xFF6366F1); // Indigo
-  static const Color _darkBackground = Color(0xFF0F172A); // Slate 900
-  static const Color _darkSurface = Color(0xFF1E293B); // Slate 800
+  // Premium color palette (Paper app style)
+  static const Color _seed = Color(0xFFE5E7EB); 
+  static const Color _darkBackground = Color(0xFF262D3C); // Deep slate/blue from screenshot
+  static const Color _darkSurface = Color(0xFF323B4E); // Slightly lighter for cards if needed
   
-  static const Color _lightBackground = Color(0xFFF8FAFC); // Slate 50
+  static const Color _lightBackground = Color(0xFFF8FAFC);
   static const Color _lightSurface = Color(0xFFFFFFFF);
 
   static ThemeData get light => ThemeData(
@@ -26,30 +26,28 @@ class AppTheme {
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          centerTitle: false,
+          centerTitle: true,
           scrolledUnderElevation: 0,
           iconTheme: IconThemeData(color: Color(0xFF334155)),
           titleTextStyle: TextStyle(
             color: Color(0xFF0F172A),
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.5,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
         cardTheme: CardThemeData(
           color: _lightSurface,
           elevation: 8,
           shadowColor: Colors.black.withOpacity(0.08),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           clipBehavior: Clip.antiAlias,
         ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: _seed,
-          foregroundColor: Colors.white,
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
           elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
-        fontFamily: 'Inter', // Assumes a modern sans-serif like Inter or Roboto
+        fontFamily: 'Inter',
       );
 
   static ThemeData get dark => ThemeData(
@@ -60,34 +58,32 @@ class AppTheme {
           brightness: Brightness.dark,
           background: _darkBackground,
           surface: _darkSurface,
-          primary: _seed,
+          primary: Colors.white,
         ),
         scaffoldBackgroundColor: _darkBackground,
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          centerTitle: false,
+          centerTitle: true,
           scrolledUnderElevation: 0,
-          iconTheme: IconThemeData(color: Color(0xFFCBD5E1)),
+          iconTheme: IconThemeData(color: Colors.white),
           titleTextStyle: TextStyle(
             color: Colors.white,
-            fontSize: 28,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.5,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
         cardTheme: CardThemeData(
-          color: _darkSurface,
+          color: _lightSurface, // Paper books are white even in dark mode!
           elevation: 12,
           shadowColor: Colors.black.withOpacity(0.4),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           clipBehavior: Clip.antiAlias,
         ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: _seed,
-          foregroundColor: Colors.white,
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
           elevation: 8,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         fontFamily: 'Inter',
       );
