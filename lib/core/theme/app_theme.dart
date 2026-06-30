@@ -36,7 +36,7 @@ class AppTheme {
             letterSpacing: -0.5,
           ),
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           color: _lightSurface,
           elevation: 8,
           shadowColor: Colors.black.withOpacity(0.08),
@@ -76,7 +76,7 @@ class AppTheme {
             letterSpacing: -0.5,
           ),
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           color: _darkSurface,
           elevation: 12,
           shadowColor: Colors.black.withOpacity(0.4),
