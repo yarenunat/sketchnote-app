@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/app_theme.dart';
+import 'core/routing/app_router.dart';
 import 'features/library/views/library_screen.dart';
 
-/// Entry point.
-///
-/// Cursor TODO: wrap with any startup initialization (database open,
-/// shared_preferences load, license checks, etc.) before runApp.
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Prefer landscape on tablets, allow portrait on phones
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
   runApp(const ProviderScope(child: SketchNoteApp()));
 }
 
@@ -23,7 +30,9 @@ class SketchNoteApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      home: const LibraryScreen(),
+      // Named routes
+      routes: AppRouter.routes,
+      onGenerateRoute: AppRouter.onGenerateRoute,
     );
   }
 }

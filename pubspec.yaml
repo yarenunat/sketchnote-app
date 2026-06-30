@@ -30,6 +30,15 @@ dependencies:
   # PDF export
   pdf: ^3.11.1
 
+  # Image picking (camera + gallery) for collage feature
+  image_picker: ^1.1.2
+
+  # Google Fonts (Playfair Display for serif headings, Inter for body)
+  google_fonts: ^6.2.1
+
+  # HSV Color Picker
+  flutter_colorpicker: ^1.1.0
+
   # Stylus / pointer low-level data is read via raw PointerEvent API (Flutter SDK),
   # no extra package required for pressure/tilt on iOS+Android.
 
@@ -39,6 +48,8 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   build_runner: ^2.4.13
   drift_dev: ^2.18.0
+  mockito: ^5.4.4
+  build: ^2.4.2
 
 flutter:
   uses-material-design: true
