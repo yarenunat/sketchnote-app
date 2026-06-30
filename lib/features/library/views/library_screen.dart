@@ -6,14 +6,16 @@ import '../viewmodels/library_viewmodel.dart';
 import '../../notebook/views/notebook_pager_screen.dart';
 import '../../settings/views/settings_screen.dart';
 
-// Paper app cover color palettes
+// Rich physical notebook cover colors — each pair is [cover, accent]
 const List<List<Color>> _coverGradients = [
-  [Color(0xFFE8504A), Color(0xFF3B7BD9), Color(0xFFE8C84A), Color(0xFF2DB09A)], // Geometric multi
-  [Color(0xFF6B4FA0), Color(0xFFD4A0FF)], // Purple
-  [Color(0xFF1A936F), Color(0xFF88D498)], // Green
-  [Color(0xFFE63946), Color(0xFFFF9F1C)], // Red-Orange
-  [Color(0xFF457B9D), Color(0xFFA8DADC)], // Blue
-  [Color(0xFFE76F51), Color(0xFFF4A261)], // Terracotta
+  [Color(0xFF8B1A1A), Color(0xFFFFD700)],   // Deep burgundy / gold
+  [Color(0xFF1B3A6B), Color(0xFF7EB8F7)],   // Navy / sky blue
+  [Color(0xFF1F4E3D), Color(0xFFA8E6CF)],   // Forest green / mint
+  [Color(0xFF4A1C40), Color(0xFFE8A0C0)],   // Plum / rose
+  [Color(0xFF8B4513), Color(0xFFF4A261)],   // Saddle brown / amber
+  [Color(0xFF2D3250), Color(0xFF7B8FD4)],   // Slate navy / periwinkle
+  [Color(0xFF3D1C02), Color(0xFFD4A57A)],   // Dark leather / tan
+  [Color(0xFF0D3B2E), Color(0xFF52B788)],   // Cypress / sage
 ];
 
 class LibraryScreen extends ConsumerStatefulWidget {
@@ -286,7 +288,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   }
 }
 
-/// Decorative journal cover widget — mimics the geometric cover from the screenshot.
+/// Decorative journal cover widget — mimics a physical spiral notebook.
 class _JournalCoverCard extends StatelessWidget {
   final List<Color> colors;
   final int index;
@@ -298,89 +300,127 @@ class _JournalCoverCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.45),
-              blurRadius: 24,
-              offset: const Offset(0, 12))
+              color: Colors.black.withOpacity(0.5),
+              blurRadius: 28,
+              offset: const Offset(6, 12)),
+          BoxShadow(
+              color: colors[0].withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 4)),
         ],
       ),
       clipBehavior: Clip.antiAlias,
       child: AspectRatio(
-        aspectRatio: 0.75,
+        aspectRatio: 0.72,
         child: CustomPaint(
-          painter: _GeometricCoverPainter(colors: colors, seed: index),
+          painter: _NotebookCoverPainter(colors: colors, index: index),
         ),
       ),
     );
   }
 }
 
-/// Draws a colorful geometric cover pattern inspired by the Paper app.
-class _GeometricCoverPainter extends CustomPainter {
+/// Draws a realistic physical notebook cover.
+class _NotebookCoverPainter extends CustomPainter {
   final List<Color> colors;
-  final int seed;
+  final int index;
 
-  _GeometricCoverPainter({required this.colors, required this.seed});
+  _NotebookCoverPainter({required this.colors, required this.index});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final rng = Random(seed * 137 + 42);
-    final bg = colors[0];
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height),
-        Paint()..color = bg);
+    final rng = Random(index * 7 + 13);
+    final coverColor = colors[0];
+    final accentColor = colors.length > 1 ? colors[1] : colors[0].withOpacity(0.5);
 
-    final shapes = 12 + rng.nextInt(8);
-    for (int i = 0; i < shapes; i++) {
-      final color = colors[rng.nextInt(colors.length)]
-          .withOpacity(0.6 + rng.nextDouble() * 0.4);
-      final paint = Paint()..color = color;
-      final x = rng.nextDouble() * size.width;
-      final y = rng.nextDouble() * size.height;
-      final r = 20.0 + rng.nextDouble() * 60;
-      final shapeType = rng.nextInt(4);
-      canvas.save();
-      canvas.translate(x, y);
-      canvas.rotate(rng.nextDouble() * 3.14);
-      switch (shapeType) {
-        case 0:
-          canvas.drawCircle(Offset.zero, r * 0.5, paint);
-          break;
-        case 1:
-          canvas.drawRect(Rect.fromCenter(center: Offset.zero, width: r, height: r), paint);
-          break;
-        case 2:
-          final path = Path()
-            ..moveTo(0, -r * 0.6)
-            ..lineTo(r * 0.5, r * 0.4)
-            ..lineTo(-r * 0.5, r * 0.4)
-            ..close();
-          canvas.drawPath(path, paint);
-          break;
-        case 3:
-          canvas.drawRect(
-              Rect.fromCenter(center: Offset.zero, width: r * 1.2, height: r * 0.4), paint);
-          break;
-      }
-      canvas.restore();
+    // ── Shadow/depth on the left (spine effect) ──────────────
+    final spineWidth = size.width * 0.06;
+    final spinePaint = Paint()..color = Colors.black.withOpacity(0.35);
+    canvas.drawRect(Rect.fromLTWH(0, 0, spineWidth, size.height), spinePaint);
+
+    // ── Book cover (main body) ────────────────────────────────
+    final coverPaint = Paint()..color = coverColor;
+    canvas.drawRect(
+        Rect.fromLTWH(spineWidth, 0, size.width - spineWidth, size.height),
+        coverPaint);
+
+    // ── Subtle texture (horizontal ruled lines) ───────────────
+    final linePaint = Paint()
+      ..color = Colors.white.withOpacity(0.04)
+      ..strokeWidth = 0.8;
+    for (double y = 20; y < size.height; y += 18) {
+      canvas.drawLine(
+          Offset(spineWidth, y), Offset(size.width, y), linePaint);
     }
 
-    // Subtle grid lines like the screenshot
-    final gridPaint = Paint()
-      ..color = Colors.white.withOpacity(0.08)
-      ..strokeWidth = 1;
-    for (double x = 0; x < size.width; x += size.width / 4) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+    // ── Accent stripe / label area ────────────────────────────
+    final labelRect = Rect.fromLTWH(
+        spineWidth + size.width * 0.08,
+        size.height * 0.28,
+        size.width * 0.75,
+        size.height * 0.32);
+    final labelPaint = Paint()
+      ..color = Colors.white.withOpacity(0.12);
+    final rrect = RRect.fromRectAndRadius(labelRect, const Radius.circular(4));
+    canvas.drawRRect(rrect, labelPaint);
+    
+    // ── Decorative accent dot or stripe ──────────────────────
+    final accentPaint = Paint()..color = accentColor.withOpacity(0.7);
+    final dotX = spineWidth + size.width * 0.12;
+    canvas.drawCircle(Offset(dotX, size.height * 0.18), 6, accentPaint);
+    canvas.drawCircle(Offset(dotX, size.height * 0.18), 3,
+        Paint()..color = Colors.white.withOpacity(0.9));
+
+    // ── Corner fold ───────────────────────────────────────────
+    final foldPath = Path()
+      ..moveTo(size.width, size.height)
+      ..lineTo(size.width - 18, size.height)
+      ..lineTo(size.width, size.height - 18)
+      ..close();
+    canvas.drawPath(foldPath,
+        Paint()..color = Colors.black.withOpacity(0.2));
+    
+    // ── Spiral binding rings on left edge ────────────────────
+    final ringPaint = Paint()
+      ..color = Colors.white.withOpacity(0.6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.8;
+    final ringFillPaint = Paint()
+      ..color = Colors.white.withOpacity(0.15)
+      ..style = PaintingStyle.fill;
+    const ringCount = 7;
+    final ringSpacing = size.height / (ringCount + 1);
+    for (int i = 1; i <= ringCount; i++) {
+      final cy = ringSpacing * i;
+      final ringRect = Rect.fromCenter(
+          center: Offset(spineWidth / 2, cy),
+          width: spineWidth * 1.1,
+          height: ringSpacing * 0.38);
+      canvas.drawOval(ringRect, ringFillPaint);
+      canvas.drawOval(ringRect, ringPaint);
     }
-    for (double y = 0; y < size.height; y += size.height / 5) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
-    }
+
+    // ── Subtle vignette overlay ───────────────────────────────
+    final vignette = Paint()
+      ..shader = RadialGradient(
+        center: Alignment.center,
+        radius: 0.9,
+        colors: [
+          Colors.transparent,
+          Colors.black.withOpacity(0.18),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+    canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.width, size.height), vignette);
   }
 
   @override
-  bool shouldRepaint(_GeometricCoverPainter old) => false;
+  bool shouldRepaint(_NotebookCoverPainter old) => false;
 }
+
 
 class _DummyNotebook {
   final String id;
